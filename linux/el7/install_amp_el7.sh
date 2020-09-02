@@ -19,7 +19,7 @@
 #############################################################################
 #                                                                           #
 #  Installing Apache, Mysql 8 , PHP 7.4 into Centos 7                       #
-#  Also Installing composer , ioncube , phpmyadmin                          #
+#  Also Installing composer , ioncube , phpmyadmin, certbot                 #
 #                                                                           #
 #---------------------------------------------------------------------------#            
 #  Tested on centos 7 minimal (Centos 7 ONLY)                               #
@@ -97,10 +97,11 @@ splash(){
     echo ""
     echo "  This installer will install:"
     echo "  - Apache Web server"   
-    echo "  - MySQL 8.0 Database Server"
+    echo "  - MySQL 8 Database Server"
     echo "  - PHP 7.4"
     echo "  - PHP Composer"
     echo "  - phpMyAdmin"
+    echo "  - Let’s Encrypt Certbot"
     echo ""
 
 }
@@ -401,6 +402,8 @@ yum -y install httpd
 systemctl enable httpd
 systemctl start httpd
 systemctl status httpd
+#installing mod_ssl
+yum -y install mod_ssl
 httpd -v
 firewall-cmd --permanent --add-service=http
 firewall-cmd --permanent --add-service=https
@@ -417,6 +420,18 @@ echo "Allowing .htaccess file in /var/www/html ... "
 </Directory>
 EOM
 
+echo "Installing certbot-apache to handle SSL using Let's Encrypt ..."
+yum -y install certbot-apache
+echo "Restarting apache ... "
+systemctl restart httpd
+echo " >>> to run certbot run: "
+echo " >>> $ certbot --apache "
+echo " remember that if you want to renew ssl certificates cerbot handles you must add"
+echo " * */12 * * * /usr/bin/certbot renew >/dev/null 2>&1 "
+echo "to your server crontab"
+echo "you are adviced to take a look into https://linuxhostsupport.com/blog/how-to-install-lets-encrypt-on-centos-7-with-apache/ "
+echo "for more information about certbot"
+echo ""
 echo "Restarting Apache ..."
 systemctl restart httpd
 
