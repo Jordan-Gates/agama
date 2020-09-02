@@ -561,6 +561,6 @@ else
 echo ""
 echo "ERROR: Exit without installing due not accepting"
 echo ""
-
+exit 1;
 
 fi #for $response
