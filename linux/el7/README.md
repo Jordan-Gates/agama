@@ -1,6 +1,6 @@
 # EL7 Folder contents
 
-This folder contains scripts and tools and files related to EL7 OS (RHLE 7 , Centos 7)
+This folder contains scripts and tools and files related to EL7 OS (RHEL 7 , Centos 7)
 
 
 
