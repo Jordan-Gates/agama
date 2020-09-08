@@ -420,21 +420,6 @@ echo "Allowing .htaccess file in /var/www/html ... "
 </Directory>
 EOM
 
-echo "Installing certbot-apache to handle SSL using Let's Encrypt ..."
-yum -y install certbot-apache
-echo "Restarting apache ... "
-systemctl restart httpd
-echo " >>> to run certbot run: "
-echo " >>> $ certbot --apache "
-echo " remember that if you want to renew ssl certificates cerbot handles you must add"
-echo " * */12 * * * /usr/bin/certbot renew >/dev/null 2>&1 "
-echo "to your server crontab"
-echo "you are adviced to take a look into https://linuxhostsupport.com/blog/how-to-install-lets-encrypt-on-centos-7-with-apache/ "
-echo "for more information about certbot"
-echo ""
-echo "Restarting Apache ..."
-systemctl restart httpd
-
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum -y install https://rpms.remirepo.net/enterprise/remi-release-7.rpm
 yum -y install yum-utils
@@ -448,6 +433,19 @@ yum -y module install php:remi-7.4
 yum -y update
 yum -y install php php-common php-mysqlnd php-opcache php-gd php-xml php-mbstring php-intl php-json php-cli php-zip php-xmlrpc php-pear php-devel gcc 
 yum -y install ImageMagick ImageMagick-devel ImageMagick-perl
+
+echo "Installing certbot-apache to handle SSL using Let's Encrypt ..."
+yum -y install certbot-apache
+echo "Restarting apache ... "
+systemctl restart httpd
+echo " >>> to run certbot run: "
+echo " >>> $ certbot --apache "
+echo " remember that if you want to renew ssl certificates cerbot handles you must add"
+echo " * */12 * * * /usr/bin/certbot renew >/dev/null 2>&1 "
+echo "to your server crontab"
+echo "you are adviced to take a look into https://linuxhostsupport.com/blog/how-to-install-lets-encrypt-on-centos-7-with-apache/ "
+echo "for more information about certbot"
+echo ""
 
 echo "Installing Database server .."
 echo ""
