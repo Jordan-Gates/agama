@@ -35,6 +35,8 @@ fi
 
 OS_TARGET_VERSION_ID=7
 OS_TARGET_ID="centos"
+#the minimum memory size required in mb
+min_memorysize_alert=1000
 
 OS_ID=$(sed -e 's/^"//' -e 's/"$//' <<< `awk -F= '$1=="ID" { print $2  ;}' /etc/*-release`)
 OS_VERSION_ID=$(sed -e 's/^"//' -e 's/"$//' <<< `awk -F= '$1=="VERSION_ID" { print $2  ;}' /etc/*release`)
@@ -322,6 +324,23 @@ echo "help: $OPT_HELP"
 
 
 echo "Preparing ..."
+
+#I will check the total ram size in MB and the compare it  with min_memorysize_alert
+total_ram=$(free  -m| awk 'FNR == 2 {print $2}')
+if [ $total_ram -lt $min_memorysize_alert ]; then
+        echo ""
+        echo "Software require atleast $min_memorysize_alert MB of memory, current machine has $total_ram MB RAM and this may break MySQL and other software"
+        echo "If you already ENABLED SWAP MEMORY you can continue installing and ignore this alert"
+        echo ""
+        read -r -p "Are you sure you want to continue the installer while you know that you have A memory size less than the required size? [y/N] " response
+        if ! [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+                echo ""
+                echo "Exit , user decided to not continue due low memory size .. I Adice you to create a swap file"
+                echo ""
+                exit 10
+        fi
+fi
+
 echo ""
 if [ $OS_ID != $OS_TARGET_ID ]  ||  [ $OS_VERSION_ID -ne $OS_TARGET_VERSION_ID  ]; then
    echo "ERROR: This script is for $OS_TARGET_ID $OS_TARGET_VERSION_ID linux & it looks like you are running $OS_ID $OS_VERSION_ID" 1>&2
