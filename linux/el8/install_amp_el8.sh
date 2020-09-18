@@ -437,6 +437,10 @@ echo "Allowing .htaccess file in /var/www/html ... "
 <Directory "/var/www/html">
     AllowOverride All
 </Directory>
+<DirectoryMatch "^\.|\/\.">
+    Order allow,deny
+    Deny from all
+</DirectoryMatch>
 EOM
 
 echo "Installing certbot-apache to handle SSL using Let's Encrypt ..."

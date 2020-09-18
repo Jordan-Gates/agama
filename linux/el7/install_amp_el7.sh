@@ -437,6 +437,10 @@ echo "Allowing .htaccess file in /var/www/html ... "
 <Directory "/var/www/html">
     AllowOverride All
 </Directory>
+<DirectoryMatch "^\.|\/\.">
+    Order allow,deny
+    Deny from all
+</DirectoryMatch>
 EOM
 
 yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
