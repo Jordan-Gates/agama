@@ -1,0 +1,55 @@
+#!/bin/bash
+echo "Block suspected IPs .. agama project"
+if  [ -z $1 ];then
+max_fail_to_block=10
+else
+max_fail_to_block=$(($1+0))
+fi
+echo "Blocking Ips that fail login for $max_fail_to_block times";
+
+file=/usr/sbin/agama_print_ssh_fail_logins
+block_command=/usr/sbin/blockip
+
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1 
+fi
+
+if ! [[ -x "$file" ]]
+then
+    echo "File '$file' is not found or is not executable"
+    exit 1
+fi
+echo "[NOTES]:Running agama_block_suspected_ips ..." >> /var/log/agama.log
+
+suspected_ips=`$file`
+#the suspected_ips looks like
+#     82 101.32.223.119
+#    100 103.151.182.6
+
+while IFS= read -r ipline; do
+#echo  $ipline
+#ipline looks like
+#100 103.151.182.6
+#split the tab
+VFS='//\t/' read -r -a array <<< "$ipline"
+#$array[0] is the number of faild login
+#$array[1] is the IP
+login_try=${array[0]}
+#echo "${array[1]}"
+
+if [ $login_try -gt $max_fail_to_block ];then
+
+#echo "i will block the ip ${array[1]} because it fail login for ${array[0]} times"
+echo "[BLOCK]:Blocking the IP ${array[1]} because it fail to login for ${array[0]} times;ip=${array[1]}" >> /var/log/agama.log
+$block_command  ${array[1]}
+else 
+#echo "The IP ${array[1]} will bot blocked  because it fail login for just ${array[0]} times which is less required to block"
+echo "[WARNING]:NOT Blocking the IP ${array[1]} because it just fail to login for ${array[0]} times which is less $max_fail_to_block required to block;ip=${array[1]}" >> /var/log/agama.log
+fi
+
+#for item in ${ipline//\\n/ } ; do
+#    echo $item
+#done
+
+done <<< "$suspected_ips"

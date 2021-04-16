@@ -1,0 +1,16 @@
+#!/bin/bash
+echo "IP Blocker .. agama project"
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 1>&2
+   exit 1 
+fi
+if [ -z $1 ]
+then
+echo ""
+echo "provide the ip that you want to block , ex. $0 100.10.100.100"
+exit 1;
+fi
+echo "Blocking $1 .."
+firewall-cmd --permanent --add-rich-rule="rule family='ipv4' source address='$1' reject"
+firewall-cmd --reload
+
